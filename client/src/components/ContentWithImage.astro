@@ -1,0 +1,38 @@
+---
+import { getStrapiMedia } from "../utils/getStrapiMedia";
+const { block } = Astro.props;
+const imageUrl = getStrapiMedia(block.image?.url);
+
+---
+
+<section class={`py-20 ${block.reversed ? "bg-gray-50" : "bg-white"}`}>
+	<div
+		class={`container mx-auto px-6 flex flex-col md:flex-row items-center gap-10 ${block.reversed ? "md:flex-row-reverse" : ""}`}
+	>
+		{
+			imageUrl && (
+				<img
+					src={imageUrl}
+					alt={block.image?.alternativeText ?? "Hero Image"}
+					class="rounded-xl w-full md:w-1/2 shadow-lg"
+					loading="lazy"
+				/>
+			)
+		}
+		<div class="md:w-1/2">
+			<h3 class="text-3xl font-bold mb-4">{block.heading}</h3>
+			<p class="text-gray-600 mb-6">{block.content}</p>
+			{
+				block.link && (
+					<a
+						href={block.link.href}
+						target={block.link.isExternal ? "_blank" : "_self"}
+						class="inline-block bg-blue-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+					>
+						{block.link.label}
+					</a>
+				)
+			}
+		</div>
+	</div>
+</section>

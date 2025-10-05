@@ -1,0 +1,11 @@
+---
+import markdownIt from "markdown-it";
+const { block } = Astro.props;
+
+const md = markdownIt();
+const html = md.render(block.content || "");
+---
+
+<section class="prose mx-auto py-20 px-6">
+	<div class="prose max-w-none" set:html={html} />
+</section>

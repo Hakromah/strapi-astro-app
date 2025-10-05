@@ -1,0 +1,45 @@
+---
+import { getStrapiMedia } from "../utils/getStrapiMedia";
+const { block } = Astro.props;
+
+const imageUrl = getStrapiMedia(block.image?.url);
+---
+
+<section class="bg-gradient-to-b from-blue-50 to-white py-20">
+	<div class="container mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+		<div>
+			<h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-gray-800">
+				{block.heading}
+			</h1>
+			<p class="text-lg text-gray-600 mb-8">{block.text}</p>
+			<div class="flex gap-4">
+				{
+					block.links?.map((link: any) => (
+						<a
+							href={link.href}
+							target={link.isExternal ? "_blank" : "_self"}
+							class={`px-6 py-3 rounded-lg font-semibold transition ${
+								link.type === "PRIMARY"
+									? "bg-blue-600 text-white hover:bg-blue-700"
+									: "border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+							}`}
+						>
+							{link.label}
+						</a>
+					))
+				}
+			</div>
+		</div>
+
+		{
+			imageUrl && (
+				<img
+					src={imageUrl}
+					alt={block.image?.alternativeText ?? "Hero Image"}
+					class="rounded-2xl shadow-lg object-cover w-full"
+					loading="lazy"
+				/>
+			)
+		}
+	</div>
+</section>

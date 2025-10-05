@@ -71,8 +71,7 @@ const { banner, header, footer } = globalData?.data || {};
 	<body>
 		{banner && <Banner data={banner} />}
 		{header && <Header data={header} />}
-		{/* <!-- <slot /> --> */}
-		{/* <slot /> This displays the pages in the index.astro */}
+		<slot />
 		{footer && <Footer data={footer} />}
 	</body>
 </html>
