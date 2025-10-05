@@ -1,5 +1,63 @@
 ---
+import type { TBanner, THeader, TFooter } from "../types";
 import "../styles/global.css";
+
+import Banner from "../components/Banner.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+
+type TStrapiResponse<T = null> = {
+	success: boolean;
+	data?: T;
+	error?: {
+		status: number;
+		name: string;
+		message: string;
+		details?: Record<string, string[]>;
+	};
+	meta?: {
+		pagination: {
+			page: number;
+			pageSize: number;
+			pageCount: number;
+			total: number;
+		};
+	};
+};
+
+type TGlobalData = {
+	id: number;
+	documentId: string;
+	title: string;
+	description: string;
+	createdAt: string;
+	updatedAt: string;
+	publishedAt: string;
+	banner: TBanner;
+	header: THeader;
+	footer: TFooter;
+};
+
+async function getStrapiGlobalData(): Promise<TStrapiResponse<TGlobalData>> {
+	const BASE_URL =
+		import.meta.env.VITE_STRAPI_BASE_URL ??
+		"http://127.0.0.1:1337/api/global";
+	const path = "/api/global";
+	const url = new URL(path, BASE_URL);
+	const response = await fetch(url.href);
+	const data = await response.json();
+	console.dir(data, { depth: null });
+	return data;
+}
+
+const globalData = await getStrapiGlobalData();
+
+if (globalData.error) {
+	console.error("Failed to fetch global data:", globalData.error?.message);
+	throw new Error(globalData.error?.message);
+}
+
+const { banner, header, footer } = globalData?.data || {};
 ---
 
 <html lang="en">
@@ -11,6 +69,10 @@ import "../styles/global.css";
 		<title>Astro Basics</title>
 	</head>
 	<body>
-		<slot />
+		{banner && <Banner data={banner} />}
+		{header && <Header data={header} />}
+		{/* <!-- <slot /> --> */}
+		{/* <slot /> This displays the pages in the index.astro */}
+		{footer && <Footer data={footer} />}
 	</body>
 </html>
