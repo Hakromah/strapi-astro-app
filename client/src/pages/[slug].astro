@@ -1,9 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
-
 import Hero from "../components/Hero.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import CardGrid from "../components/CardGrid.astro";
@@ -14,16 +10,53 @@ import FaqSection from "../components/FaqSection.astro";
 import Newsletter from "../components/Newsletter.astro";
 import FeaturedArticles from "../components/FeaturedArticles.astro";
 
-const res = await fetch(import.meta.env.LANDING_PAGE_API_URL);
-const json = await res.json();
-const { blocks } = json.data;
-console.dir(blocks, { depth: null }); 
+// ✅ Type your Strapi block
+type StrapiBlock = {
+	__component: string;
+	id: number;
+	heading?: string;
+	text?: string;
+	links?: any[];
+	image?: {
+		url: string;
+		alternativeText?: string;
+	};
+};
+
+// ✅ Type your page
+type StrapiPage = {
+	id: number;
+	title: string;
+	description: string;
+	slug: string;
+	blocks: StrapiBlock[];
+};
+
+// ✅ 1. Get all slugs
+export async function getStaticPaths() {
+	const res = await fetch("http://127.0.0.1:1337/api/pages");
+	const json = await res.json();
+
+	return json.data.map((page: any) => ({
+		params: { slug: page.slug },
+		props: { page },
+	}));
+}
+
+// ✅ 2. Access props and safely type them
+const { page } = Astro.props as { page: StrapiPage };
+const { title, description, blocks } = page;
 ---
 
 <Layout>
 	<main class="bg-white text-gray-900 antialiased">
+		<section class="container mx-auto px-6 py-16 text-center">
+			<h1 class="text-5xl font-extrabold text-gray-800 mb-4">{title}</h1>
+			<p class="text-lg text-gray-600">{description}</p>
+		</section>
+
 		{
-			blocks.map((block: any) => (
+			blocks?.map((block) => (
 				<>
 					{block.__component === "blocks.hero" && <Hero block={block} />}
 					{block.__component === "blocks.section-heading" && (
